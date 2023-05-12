@@ -1,33 +1,32 @@
 import "./App.css";
-import { useState } from "react";
-import { FaStar } from "react-icons/fa";
-
-const createArray = (length) => [...Array(length)];
-
-function StarRating({ totalStars = 5 }) {
-  const [selectedStars, setSelectedStars] = useState(0);
-  return (
-    <>
-      {createArray(totalStars).map((n, i) => (
-        <Star
-          key={i}
-          selected={selectedStars > i}
-          onSelect={() => setSelectedStars(i + 1)}
-        />
-      ))}
-      <p>
-        {selectedStars} out of {totalStars}
-      </p>
-    </>
-  );
-}
-
-function Star({ selected = false, onSelect }) {
-  return <FaStar color={selected ? "red" : "grey"} onClick={onSelect} />;
-}
+import { useEffect, useState } from "react";
 
 function App() {
-  return <StarRating totalStars={5} />;
+  const [data, setData] = useState([]);
+
+  useEffect(()=>{
+    fetch(`https://api.github.com/users`)
+    .then(res => res.json())
+    .then(setData)
+  }, [])
+
+  if(data){
+    return(
+      <div>
+      <ul>
+        {data.map((user)=>(
+          <li key={user.id}>{user.login}</li>
+        ))}
+      </ul>
+      <button onClick={()=>setData([])}>
+          Remove Data
+      </button>
+      </div>
+    )
+  }
+  return (
+      <p>No Users</p>
+  );
 }
 
 export default App;
